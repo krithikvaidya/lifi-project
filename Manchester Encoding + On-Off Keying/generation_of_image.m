@@ -47,4 +47,4 @@ end
 
 img = mat2gray(image);
 imwrite(img, 'lines.jpg');
-imshow(img);
+% disp(img);
