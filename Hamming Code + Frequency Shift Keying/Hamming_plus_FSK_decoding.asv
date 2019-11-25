@@ -1,0 +1,120 @@
+img = imread('lines.jpg');
+disp(img);
+% now we will demodulate and decode the image
+
+bits = zeros(1, 1024); % stores extracted bits
+
+for n = 31 : (1024 - 30)
+    Sum = uint32(0);
+    for m = 1 : 64
+        Sum = Sum + uint32(img(m, n));
+    end
+    % disp(Sum);
+    if Sum > 8128
+        bits(n) = 1;
+    end
+end
+
+decodedBits = ones(1, 121);
+
+n = 31;
+
+for i = 1 : 11 * 11
+    if (bits(n) == 1)
+        decodedBits(i) = 1;
+    else
+        decodedBits(i) = 0;
+    end
+    
+    n = n + 5;
+end
+
+disp('decoded bits');
+
+% decoding procedure:
+% calculate parities for all redundant bits.
+% if parity doesn't match, set to 1.
+% if match, set to 0;
+% find error bit (if any) by getting the 
+% decimal equivalent of the binary value
+
+final_str = '';
+
+% disp(decodedBits);
+errorBit = uint32(0);
+
+for i = 1 : 11
+    % store the row in seperate variable
+    Hamming = decodedBits(((i - 1) * 11) + 1: i * 11);
+    
+    % check correctness of parities
+    sum = 0;
+    ctr = 0;
+    
+    for  j = 11 : -1 : 1
+        if rem(ctr, 2) == 0
+            sum = sum + Hamming(j);
+        end
+        ctr = ctr + 1;
+    end
+    
+    if rem(sum, uint32(2)) == uint32(1)
+        errorBit = errorBit + 1;
+    end
+    
+    sum = 0;
+    ctr = 0;
+    
+    for  j = 11 : -1 : 1
+        if rem(ctr, 4) <= 1
+            sum = sum + Hamming(j);
+        end
+        ctr = ctr + 1;
+    end
+    
+    if rem(sum, 2) == 1
+        errorBit = errorBit + 2;
+    end
+    
+    sum = 0;
+    ctr = 0;
+    
+    for  j = 11 : -1 : 1
+        if rem(ctr, 8) <= 3
+            sum = sum + Hamming(j);
+        end
+        ctr = ctr + 1;
+    end
+    
+    if rem(sum, 2) == 1
+        errorBit = errorBit + 4;
+    end   
+    
+    if rem(Hamming(i, 1) + Hamming(i, 2) + Hamming(i, 3), 2) == 1
+        errorBit = errorBit + 8;
+    end
+    
+    if errorBit > 0
+        disp(['In the letter number ', i, ' there is an error in bit ', errorBit, ' of the Hamming code']);
+        Hamming(i, errorBit) = rem(Hamming(i, errorBit) + 1, 2);
+    end
+    
+    % error corrected.
+    binaryStr = uint32(zeros(8));
+    
+    binary(1) = 0;
+    binary(2) = Hamming(i, 1);
+    binary(3) = Hamming(i, 2);
+    binary(4) = Hamming(i, 3);
+    binary(5) = Hamming(i, 5);
+    binary(6) = Hamming(i, 6);
+    binary(7) = Hamming(i, 7);
+    binary(8) = Hamming(i, 9);
+    
+    str_x = num2str(binary);
+    y = bin2dec(str_x);
+    %disp(y);
+    final_str = append(final_str, char(y));
+end
+
+disp(final_str);

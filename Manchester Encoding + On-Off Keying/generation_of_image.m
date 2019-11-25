@@ -46,5 +46,6 @@ for image_col = 31 : 30 + (11 * 16)
 end
 
 img = mat2gray(image);
+imshow(img);
 imwrite(img, 'lines.jpg');
 % disp(img);
