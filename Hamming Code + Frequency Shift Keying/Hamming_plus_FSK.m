@@ -46,21 +46,11 @@ for i = 1 : 11
         Hamming(i, 10) = 1;
     end
     
-    sum = 0;
-    ctr = 0;
-    
-    for  j = 11 : -1 : 1
-        if rem(ctr, 8) <= 3
-            sum = sum + Hamming(i,j);
-        end
-        ctr = ctr + 1;
+    if rem(Hamming(i, 5) + Hamming(i, 6) + Hamming(i, 7) + Hamming(i, 8), 2) == 1
+        Hamming(i, 8) = 1; 
     end
     
-    if rem(sum, 2) == 1
-        Hamming(i, 8) = 1;
-    end   
-    
-    if rem(Hamming(i, 1) + Hamming(i, 2) + Hamming(i, 3), 2) == 1
+    if rem(Hamming(i, 1) + Hamming(i, 2) + Hamming(i, 3) + Hamming(i, 4), 2) == 1
         Hamming(i, 4) = 1;
   
     end

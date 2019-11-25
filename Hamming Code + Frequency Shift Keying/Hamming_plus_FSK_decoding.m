@@ -43,11 +43,10 @@ final_str = '';
 % disp(decodedBits);
 
 
-for i = 1 : 1
+for i = 1 : 11
     errorBit = uint32(0);
     % store the row in seperate variable
     Hamming = decodedBits(((i - 1) * 11) + 1: i * 11);
-    Hamming(2) = 1;
     disp(Hamming);
     % check correctness of parities
     sum = 0;
@@ -60,37 +59,18 @@ for i = 1 : 1
         ctr = ctr + 1;
     end
     
-    if rem(sum, uint32(2)) == uint32(1)
+    if rem(Hamming(1) + Hamming(3) + Hamming(5) + Hamming(7) + Hamming(9) + Hamming(11), 2) == 1
         errorBit = errorBit + 1;
     end
     
-    sum = 0;
-    ctr = 0;
-    
-    for  j = 11 : -1 : 1
-        if rem(ctr, 4) <= 1
-            sum = sum + Hamming(j);
-        end
-        ctr = ctr + 1;
-    end
-    
-    if rem(sum, 2) == 1
+    if rem(Hamming(1) + Hamming(2) + Hamming(5) + Hamming(6) + Hamming(9) + Hamming(10), 2) == 1
         errorBit = errorBit + 2;
     end
     
-    sum = 0;
-    ctr = 0;
     
-    for  j = 11 : -1 : 1
-        if rem(ctr, 8) <= 3
-            sum = sum + Hamming(j);
-        end
-        ctr = ctr + 1;
-    end
-    
-    if rem(sum, 2) == 1
+    if rem(Hamming(5) + Hamming(6) + Hamming(7) + Hamming(8), 2) == 1
         errorBit = errorBit + 4;
-    end   
+    end
     
     if rem(Hamming(1) + Hamming(2) + Hamming(3) + Hamming(4), 2) == 1
         errorBit = errorBit + 8;
